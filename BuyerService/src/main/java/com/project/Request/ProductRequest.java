@@ -1,5 +1,7 @@
 package com.project.Request;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class ProductRequest {
 
 	private Integer id;
@@ -7,7 +9,7 @@ public class ProductRequest {
 	private String productName;
 	private String productPrice;
 	private String productQuantity;
-	private String productImage;
+	private MultipartFile productImage;
 	private String prodectManufacturer;
 	private String prodectModel;
 	private String manufacturingDate;
@@ -54,11 +56,11 @@ public class ProductRequest {
 		this.productQuantity = productQuantity;
 	}
 
-	public String getProductImage() {
+	public MultipartFile getProductImage() {
 		return productImage;
 	}
 
-	public void setProductImage(String productImage) {
+	public void setProductImage(MultipartFile productImage) {
 		this.productImage = productImage;
 	}
 

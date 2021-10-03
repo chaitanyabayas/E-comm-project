@@ -2,6 +2,8 @@ package com.project.Request;
 
 import java.time.LocalDateTime;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class UserRequest {
 
 	private Integer id;
@@ -9,12 +11,20 @@ public class UserRequest {
 	private String lastName;
 	private String mobileNo;
 	private String contactNo;
-	private String userImage;
+	private MultipartFile userImage;
 	private String email;
 	private String password;
 	private String token;
 	private LocalDateTime tokenValidity;
 	private String otp;
+
+	private Integer userId;
+	private String buildingName;
+	private String area;
+	private String city;
+	private String state;
+	private String country;
+	private String pinCode;
 
 	public Integer getId() {
 		return id;
@@ -56,11 +66,11 @@ public class UserRequest {
 		this.contactNo = contactNo;
 	}
 
-	public String getUserImage() {
+	public MultipartFile getUserImage() {
 		return userImage;
 	}
 
-	public void setUserImage(String userImage) {
+	public void setUserImage(MultipartFile userImage) {
 		this.userImage = userImage;
 	}
 
@@ -102,6 +112,62 @@ public class UserRequest {
 
 	public void setOtp(String otp) {
 		this.otp = otp;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public String getBuildingName() {
+		return buildingName;
+	}
+
+	public void setBuildingName(String buildingName) {
+		this.buildingName = buildingName;
+	}
+
+	public String getArea() {
+		return area;
+	}
+
+	public void setArea(String area) {
+		this.area = area;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getPinCode() {
+		return pinCode;
+	}
+
+	public void setPinCode(String pinCode) {
+		this.pinCode = pinCode;
 	}
 
 }

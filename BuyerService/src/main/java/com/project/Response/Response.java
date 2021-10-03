@@ -1,6 +1,6 @@
 package com.project.Response;
 
-import org.springframework.web.bind.annotation.ResponseStatus;
+import com.project.BuyerService.ResponseStatus;
 
 public class Response {
 
