@@ -12,6 +12,7 @@ import com.project.Response.Response;
 import com.project.Service.UserService;
 
 @RestController
+@RequestMapping("/buyer/")
 public class UserController {
 
 	@Autowired

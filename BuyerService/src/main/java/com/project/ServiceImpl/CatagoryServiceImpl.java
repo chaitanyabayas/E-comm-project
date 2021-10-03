@@ -1,7 +1,9 @@
 package com.project.ServiceImpl;
 
-import com.project.Service.CatagoryService;
+import org.springframework.stereotype.Service;
 
+import com.project.Service.CatagoryService;
+@Service
 public class CatagoryServiceImpl implements CatagoryService{
 
 }

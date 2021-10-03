@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import com.project.BuyerService.ResponseStatus;
 import com.project.Dao.MainCartDAO;
@@ -17,6 +18,7 @@ import com.project.Request.UserRequest;
 import com.project.Response.Response;
 import com.project.Service.UserService;
 
+@Service
 public class UserServiceImpl implements UserService {
 
 	@Autowired
@@ -75,8 +77,12 @@ public class UserServiceImpl implements UserService {
 			userDetails.setFirstName(request.getFirstName());
 			userDetails.setLastName(request.getLastName());
 			userDetails.setMobileNo(request.getMobileNo());
-			userDetails.setContactNo(request.getContactNo());
-			userDetails.setUserImage(request.getUserImage().getOriginalFilename());
+			if (request.getContactNo() != null) {
+				userDetails.setContactNo(request.getContactNo());
+			}
+			if (request.getUserImage() != null) {
+				userDetails.setUserImage(request.getUserImage().getName());
+			}
 			userDetails.setEmail(request.getEmail());
 
 			userDetails.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -92,8 +98,12 @@ public class UserServiceImpl implements UserService {
 			userDetails.setFirstName(request.getFirstName());
 			userDetails.setLastName(request.getLastName());
 			userDetails.setMobileNo(request.getMobileNo());
-			userDetails.setContactNo(request.getContactNo());
-			userDetails.setUserImage(request.getUserImage().getOriginalFilename());
+			if (request.getContactNo() != null) {
+				userDetails.setContactNo(request.getContactNo());
+			}
+			if (request.getUserImage() != null) {
+				userDetails.setUserImage(request.getUserImage().getName());
+			}
 			userDetails.setEmail(request.getEmail());
 
 			userDetails.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -116,11 +126,11 @@ public class UserServiceImpl implements UserService {
 			userAddressDetails.setCountry(request.getCountry());
 			userAddressDetails.setPinCode(request.getPinCode());
 
-			userDetails.setCreatedBy(1);
-			userDetails.setCreatedDate(LocalDateTime.now());
-			userDetails.setUpdatedBy(1);
-			userDetails.setUpdatedDate(LocalDateTime.now());
-			userDetails.setActive(true);
+			userAddressDetails.setCreatedBy(1);
+			userAddressDetails.setCreatedDate(LocalDateTime.now());
+			userAddressDetails.setUpdatedBy(1);
+			userAddressDetails.setUpdatedDate(LocalDateTime.now());
+			userAddressDetails.setActive(true);
 
 		} else {
 
@@ -132,9 +142,9 @@ public class UserServiceImpl implements UserService {
 			userAddressDetails.setCountry(request.getCountry());
 			userAddressDetails.setPinCode(request.getPinCode());
 
-			userDetails.setUpdatedBy(1);
-			userDetails.setUpdatedDate(LocalDateTime.now());
-			userDetails.setActive(true);
+			userAddressDetails.setUpdatedBy(1);
+			userAddressDetails.setUpdatedDate(LocalDateTime.now());
+			userAddressDetails.setActive(true);
 		}
 
 		userAddressDAO.save(userAddressDetails);

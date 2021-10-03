@@ -22,9 +22,9 @@ server:
 zuul:
   prefix: /ecommerce
   routes:
-    BuyerService:
+    buyerService:
      path: /buyerService/**
-    service-id: BUYERSERVICE
+    service-id: buyerService
     eurekaDiscoveryServer:
       path: /eurekaDiscoveryServer/**
       service-id: eurekaDiscoveryService

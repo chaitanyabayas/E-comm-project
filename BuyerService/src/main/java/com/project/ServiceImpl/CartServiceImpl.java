@@ -1,7 +1,9 @@
 package com.project.ServiceImpl;
 
-import com.project.Service.CartService;
+import org.springframework.stereotype.Service;
 
+import com.project.Service.CartService;
+@Service
 public class CartServiceImpl implements CartService {
 
 }
