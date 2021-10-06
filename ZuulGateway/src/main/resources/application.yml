@@ -24,16 +24,13 @@ zuul:
   routes:
     buyerService:
      path: /buyerService/**
-    service-id: buyerService
+    service-id: BUYERSERVICE
+    sellerService:
+     path: /sellerService/**
+     service-id: SELLERSERVICE
     eurekaDiscoveryServer:
       path: /eurekaDiscoveryServer/**
       service-id: eurekaDiscoveryService
-#    discountServer:
-#      path: /discountServer/**
-#      service-id: DISCOUNTSERVICE
-#    eurekaDiscoveryService:
-#      path: /eurekaDiscoveryService/**
-#      service-id: EUREKADISCOVERYSERVICE
 
      
      

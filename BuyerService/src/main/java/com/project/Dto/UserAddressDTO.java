@@ -8,6 +8,7 @@ public class UserAddressDTO {
 
 	private Integer id;
 	private Integer userId;
+	private String addressType;
 	private String buildingName;
 	private String area;
 	private String city;
@@ -27,6 +28,7 @@ public class UserAddressDTO {
 
 		this.id = userAddress.getId();
 		this.userId = userAddress.getUserId();
+		this.addressType = userAddress.getAddressType();
 		this.buildingName = userAddress.getBuildingName();
 		this.area = userAddress.getArea();
 		this.city = userAddress.getCity();
@@ -54,6 +56,14 @@ public class UserAddressDTO {
 
 	public void setUserId(Integer userId) {
 		this.userId = userId;
+	}
+
+	public String getAddressType() {
+		return addressType;
+	}
+
+	public void setAddressType(String addressType) {
+		this.addressType = addressType;
 	}
 
 	public String getBuildingName() {

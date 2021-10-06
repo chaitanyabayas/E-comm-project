@@ -1,20 +1,29 @@
 package com.project.ServiceImpl;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.project.BuyerService.ResponseStatus;
-import com.project.Dao.MainCartDAO;
 import com.project.Dao.UserAddressDAO;
 import com.project.Dao.UserDAO;
+import com.project.Dao.UserSessionDAO;
+import com.project.Dto.UserDTO;
 import com.project.Exception.BuyerServiceExpection;
-import com.project.Model.MainCart;
 import com.project.Model.User;
 import com.project.Model.UserAddress;
+import com.project.Model.UserSession;
+import com.project.Request.LoginRequest;
 import com.project.Request.UserRequest;
+import com.project.Response.LoginResponse;
 import com.project.Response.Response;
 import com.project.Service.UserService;
 
@@ -28,10 +37,12 @@ public class UserServiceImpl implements UserService {
 	private UserAddressDAO userAddressDAO;
 
 	@Autowired
-	private MainCartDAO mainCartDAO;
+	private PasswordEncoder passwordEncoder;
 
 	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private UserSessionDAO userSessionDAO;
+
+	private JavaMailSender javaMailSender;
 
 	@Override
 	public Response userRegister(UserRequest request) throws BuyerServiceExpection {
@@ -64,12 +75,20 @@ public class UserServiceImpl implements UserService {
 
 		User userDetails = null;
 		UserAddress userAddressDetails = null;
-		MainCart mainCartDetails = null;
+
+		User email = userDAO.findActiveUserByEmail(request.getEmail());
+		if (email != null) {
+			throw new BuyerServiceExpection(ResponseStatus.ERROR, "Email ID already Exists.");
+		}
+
+		User mobileNumber = userDAO.findActiveUserByMobileNo(request.getMobileNo());
+		if (mobileNumber != null) {
+			throw new BuyerServiceExpection(ResponseStatus.ERROR, "Mobile Number already Exists.");
+		}
 
 		if (request.getId() != null) {
 			userDetails = userDAO.findUserById(request.getId());
 			userAddressDetails = userAddressDAO.findUserAddressByUserId(request.getId());
-			mainCartDetails = mainCartDAO.findMainCartByUserId(request.getId());
 		}
 
 		if (userDetails == null) {
@@ -86,6 +105,9 @@ public class UserServiceImpl implements UserService {
 			userDetails.setEmail(request.getEmail());
 
 			userDetails.setPassword(passwordEncoder.encode(request.getPassword()));
+
+			userDetails.setVerified(false);
+			userDetails.setTokenValidity(LocalDateTime.now());
 
 			userDetails.setCreatedBy(1);
 			userDetails.setCreatedDate(LocalDateTime.now());
@@ -149,26 +171,29 @@ public class UserServiceImpl implements UserService {
 
 		userAddressDAO.save(userAddressDetails);
 
-		if (mainCartDetails == null) {
-			mainCartDetails = new MainCart();
-			mainCartDetails.setUserId(userDetails.getId());
+		if (request.getId() == null) {
 
-			mainCartDetails.setCreatedBy(1);
-			mainCartDetails.setCreatedDate(LocalDateTime.now());
-			mainCartDetails.setUpdatedBy(1);
-			mainCartDetails.setUpdatedDate(LocalDateTime.now());
-			mainCartDetails.setActive(true);
-		} else {
+			ZonedDateTime zdtAtKT = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
+			String uuid = UUID.randomUUID().toString();
+			LocalDateTime loginTime = zdtAtKT.toLocalDateTime().plusHours(1);
 
-			mainCartDetails.setUserId(userDetails.getId());
+			UserSession userSession = new UserSession();
+			userSession.setUserId(userDetails.getId());
+			userSession.setToken(uuid);
+			userSession.setTokenValidity(loginTime);
+			userSession.setLastCall(zdtAtKT.toLocalDateTime());
+			userSessionDAO.save(userSession);
 
-			mainCartDetails.setUpdatedBy(1);
-			mainCartDetails.setUpdatedDate(LocalDateTime.now());
-			mainCartDetails.setActive(true);
+			SimpleMailMessage mailMessage = new SimpleMailMessage();
+			mailMessage.setTo(userDetails.getEmail());
+			mailMessage.setSubject("Complete Registration!");
+			mailMessage.setFrom("test.sms1018@gmail.com");
+			mailMessage.setText("To confirm your account, please click here : "
+					+ "http://localhost:8762/ecommerce/buyerService/buyer/confirmAccount?token="
+					+ userSession.getToken());
 
+			this.sendEmail(mailMessage);
 		}
-
-		mainCartDAO.save(mainCartDetails);
 
 		response.setStatus(ResponseStatus.OK);
 		if (request.getId() == null) {
@@ -177,6 +202,74 @@ public class UserServiceImpl implements UserService {
 			response.setMessage("User Updated Successfully.");
 		}
 		return response;
+	}
+
+	@Override
+	public LoginResponse userLogin(LoginRequest request) throws BuyerServiceExpection {
+
+		LoginResponse response = new LoginResponse();
+
+		ZonedDateTime zdtAtKT = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
+
+		if (request.getUsername() == null || request.getUsername().isEmpty()) {
+			throw new BuyerServiceExpection(ResponseStatus.MESSAGE, "Email is required");
+		} else if (request.getPassword() == null || request.getPassword().isEmpty()) {
+			throw new BuyerServiceExpection(ResponseStatus.MESSAGE, "Password is required");
+		}
+
+		String emailDetails = request.getUsername().trim();
+		User user = userDAO.findActiveByUsername(emailDetails);
+
+		if (user == null) {
+			throw new BuyerServiceExpection(ResponseStatus.MESSAGE, "Incorrect username or password!");
+		}
+
+		if (user.getActive()) {
+			String pass = request.getPassword().trim();
+			if (passwordEncoder.matches(pass, user.getPassword())) {
+				if (user.getActive()) {
+					if (user.getVerified()) {
+						String uuid = UUID.randomUUID().toString();
+						LocalDateTime loginTime = zdtAtKT.toLocalDateTime().plusHours(1);
+
+						UserSession userSession = new UserSession();
+						userSession.setUserId(user.getId());
+						userSession.setToken(uuid);
+						userSession.setTokenValidity(loginTime);
+						userSession.setLastCall(zdtAtKT.toLocalDateTime());
+						userSessionDAO.save(userSession);
+
+						UserDTO dto = new UserDTO(user);
+						dto.setToken(uuid);
+						dto.setTokenValidity(loginTime);
+						response.setUserDTO(dto);
+					} else {
+						throw new BuyerServiceExpection(ResponseStatus.MESSAGE,
+								"Account Not Verified. Please check email for verification!");
+					}
+				} else {
+					throw new BuyerServiceExpection(ResponseStatus.MESSAGE,
+							"Account is deactivated. Please contact Site administrator!");
+				}
+			} else {
+				throw new BuyerServiceExpection(ResponseStatus.MESSAGE, "Incorrect username or password!");
+			}
+		} else {
+			throw new BuyerServiceExpection(ResponseStatus.MESSAGE, "Account is deactiveted by administration!");
+		}
+		response.setStatus(ResponseStatus.OK);
+		response.setMessage("Login Successfully");
+		return response;
+	}
+
+	@Autowired
+	public void SimpleMailMessage(JavaMailSender javaMailSender) {
+		this.javaMailSender = javaMailSender;
+	}
+
+	@Async
+	public void sendEmail(SimpleMailMessage email) {
+		javaMailSender.send(email);
 	}
 
 }

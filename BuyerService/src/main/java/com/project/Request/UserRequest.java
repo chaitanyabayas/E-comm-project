@@ -17,6 +17,7 @@ public class UserRequest {
 	private String token;
 	private LocalDateTime tokenValidity;
 	private String otp;
+	private Boolean verified;
 
 	private Integer userId;
 	private String buildingName;
@@ -112,6 +113,14 @@ public class UserRequest {
 
 	public void setOtp(String otp) {
 		this.otp = otp;
+	}
+
+	public Boolean getVerified() {
+		return verified;
+	}
+
+	public void setVerified(Boolean verified) {
+		this.verified = verified;
 	}
 
 	public Integer getUserId() {

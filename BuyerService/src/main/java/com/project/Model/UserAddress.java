@@ -27,6 +27,9 @@ public class UserAddress implements Serializable {
 	@Column(name = "user_id")
 	private Integer userId;
 
+	@Column(name = "address_type")
+	private String addressType;
+
 	@Column(name = "building_name")
 	private String buildingName;
 
@@ -74,6 +77,14 @@ public class UserAddress implements Serializable {
 
 	public void setUserId(Integer userId) {
 		this.userId = userId;
+	}
+
+	public String getAddressType() {
+		return addressType;
+	}
+
+	public void setAddressType(String addressType) {
+		this.addressType = addressType;
 	}
 
 	public String getBuildingName() {

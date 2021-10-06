@@ -1,13 +1,21 @@
 package com.project.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.Dao.UserDAO;
+import com.project.Dao.UserSessionDAO;
 import com.project.Exception.BuyerServiceExpection;
+import com.project.Model.User;
+import com.project.Model.UserSession;
+import com.project.Request.LoginRequest;
 import com.project.Request.UserRequest;
+import com.project.Response.LoginResponse;
 import com.project.Response.Response;
 import com.project.Service.UserService;
 
@@ -18,10 +26,45 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private UserSessionDAO userSessionDAO;
+
+	@Autowired
+	private UserDAO userDAO;
+
 	@RequestMapping(value = "userRegister", method = RequestMethod.POST, produces = "application/json")
 	public Response userRegister(@RequestBody UserRequest request) throws BuyerServiceExpection {
 
 		Response response = userService.userRegister(request);
+		return response;
+	}
+
+	@ExceptionHandler(BuyerServiceExpection.class)
+	@RequestMapping(value = "userLogin", method = RequestMethod.POST, produces = "application/json")
+	public LoginResponse userLogin(@RequestBody LoginRequest request) throws BuyerServiceExpection {
+
+		LoginResponse response = userService.userLogin(request);
+		return response;
+	}
+
+	@RequestMapping(value = "/confirmAccount", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json")
+	public Response confirmUserAccount(@RequestParam("token") String token) {
+
+		Response response = new Response();
+
+		UserSession uToken = userSessionDAO.findByToken(token);
+
+		if (token != null) {
+			User user = userDAO.findUserById(uToken.getUserId());
+			user.setVerified(true);
+			userDAO.save(user);
+			response.setMessage("Account Verified");
+		} else {
+			response.setMessage("Error while account verification");
+		}
+
+		response.setMessage("Account Verified Successfully!");
 		return response;
 	}
 

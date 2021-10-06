@@ -1,6 +1,6 @@
 package com.project.Request;
 
-public class CartRequest {
+public class CartRequest extends Request {
 
 	private Integer id;
 	private Integer mainCartId;
