@@ -11,6 +11,7 @@ public class ProductDTO {
 	private Integer catagoryId;
 	private Integer subCatagoryId;
 	private String productName;
+	private String productDescription;
 	private String productPrice;
 	private String productQuantity;
 	private String productImage;
@@ -35,6 +36,7 @@ public class ProductDTO {
 		this.catagoryId = product.getCatagoryId();
 		this.subCatagoryId = product.getSubCatagoryId();
 		this.productName = product.getProductName();
+		this.productDescription = product.getProductDescription();
 		this.productPrice = product.getProductPrice();
 		this.productQuantity = product.getProductQuantity();
 		this.productImage = product.getProductImage();
@@ -88,6 +90,14 @@ public class ProductDTO {
 
 	public void setProductName(String productName) {
 		this.productName = productName;
+	}
+
+	public String getProductDescription() {
+		return productDescription;
+	}
+
+	public void setProductDescription(String productDescription) {
+		this.productDescription = productDescription;
 	}
 
 	public String getProductPrice() {

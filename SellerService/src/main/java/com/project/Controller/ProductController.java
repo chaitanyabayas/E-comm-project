@@ -1,10 +1,12 @@
 package com.project.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,18 +31,25 @@ public class ProductController {
 		return response;
 	}
 
-	@RequestMapping(value = "addProduct", method = RequestMethod.POST, produces = "application/json")
-	public Response addProduct(@RequestBody ProductRequest request, @RequestHeader(value = "userId") Integer userId)
-			throws SellerServiceExpection {
+	@RequestMapping(value = "getProductsBySellerId", method = RequestMethod.POST, produces = "application/json")
+	public ProductResponse getProductsBySellerId(@RequestParam(value = "userId") Integer userId) {
+
+		ProductResponse response = productService.getProductsBySellerId(userId);
+		return response;
+	}
+
+	@RequestMapping(value = "addProduct", method = RequestMethod.POST)
+	public Response addProduct(@RequestBody @ModelAttribute ProductRequest request,
+			@RequestHeader(value = "userId") Integer userId) throws SellerServiceExpection {
 		request.setUserId(userId);
 
 		Response response = productService.addProduct(request);
 		return response;
 	}
 
-	@RequestMapping(value = "editProduct", method = RequestMethod.POST, produces = "application/json")
-	public Response editProduct(@RequestBody ProductRequest request, @RequestHeader(value = "userId") Integer userId)
-			throws SellerServiceExpection {
+	@RequestMapping(value = "editProduct", method = RequestMethod.POST)
+	public Response editProduct(@RequestBody @ModelAttribute ProductRequest request,
+			@RequestHeader(value = "userId") Integer userId) throws SellerServiceExpection {
 		request.setUserId(userId);
 
 		Response response = productService.addProduct(request);

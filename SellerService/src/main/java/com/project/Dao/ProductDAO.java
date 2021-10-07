@@ -16,4 +16,7 @@ public interface ProductDAO extends JpaRepository<Product, Integer>, JpaSpecific
 	@Query("select product from Product product where product.active = 1")
 	List<Product> findAllProduct();
 
+	@Query("select product from Product product where product.sellerId = :userId and product.active = 1")
+	List<Product> findAllProductBySellerId(Integer userId);
+
 }

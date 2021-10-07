@@ -14,4 +14,6 @@ public interface ProductService {
 
 	ProductResponse getProducts();
 
+	ProductResponse getProductsBySellerId(Integer userId);
+
 }

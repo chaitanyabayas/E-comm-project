@@ -13,9 +13,11 @@ import com.project.Exception.SellerServiceExpection;
 import com.project.Model.Product;
 import com.project.Request.ModifyRequest;
 import com.project.Request.ProductRequest;
+import com.project.Response.FileResponse;
 import com.project.Response.ProductResponse;
 import com.project.Response.Response;
 import com.project.SellerService.ResponseStatus;
+import com.project.Service.FileStorageService;
 import com.project.Service.ProductService;
 
 @Service
@@ -23,6 +25,9 @@ public class ProductServiceImpl implements ProductService {
 
 	@Autowired
 	private ProductDAO productDAO;
+
+	@Autowired
+	private FileStorageService fileStorageService;
 
 	@Override
 	public ProductResponse getProducts() {
@@ -40,6 +45,26 @@ public class ProductServiceImpl implements ProductService {
 
 		response.setStatus(ResponseStatus.OK);
 		response.setMessage("Product Fetched!");
+		response.setProductDTO(productDTO);
+		return response;
+	}
+
+	@Override
+	public ProductResponse getProductsBySellerId(Integer userId) {
+		ProductResponse response = new ProductResponse();
+
+		List<Product> products = productDAO.findAllProductBySellerId(userId);
+		List<ProductDTO> productDTO = new ArrayList<ProductDTO>();
+
+		for (Product product : products) {
+			ProductDTO dto = new ProductDTO(product);
+			dto.setId(product.getId());
+			dto.setProductName(product.getProductName());
+			productDTO.add(dto);
+		}
+
+		response.setStatus(ResponseStatus.OK);
+		response.setMessage("Product Fetched For Seller!");
 		response.setProductDTO(productDTO);
 		return response;
 	}
@@ -69,6 +94,15 @@ public class ProductServiceImpl implements ProductService {
 			productDetails = productDAO.findProductById(request.getId());
 		}
 
+		FileResponse urlImage = null;
+		if (request.getProductImage() != null) {
+
+			urlImage = fileStorageService.getStoreFile(request.getProductImage());
+			if (urlImage.getStatus().equals(ResponseStatus.ERROR)) {
+				throw new SellerServiceExpection(ResponseStatus.ERROR, "Product Image : " + urlImage.getMessage());
+			}
+		}
+
 		if (productDetails == null) {
 			productDetails = new Product();
 			productDetails.setManufacturedAt(request.getManufacturedAt());
@@ -79,7 +113,7 @@ public class ProductServiceImpl implements ProductService {
 			productDetails.setProductPrice(request.getProductPrice());
 			productDetails.setProductQuantity(request.getProductQuantity());
 			if (request.getProductImage() != null)
-				productDetails.setProductImage(request.getProductImage().getName());
+				productDetails.setProductImage(urlImage.getUrl());
 			productDetails.setSellerId(request.getUserId());
 			productDetails.setCatagoryId(request.getCatagoryId());
 			productDetails.setSubCatagoryId(request.getSubCatagoryId());
@@ -100,7 +134,7 @@ public class ProductServiceImpl implements ProductService {
 			productDetails.setProductPrice(request.getProductPrice());
 			productDetails.setProductQuantity(request.getProductQuantity());
 			if (request.getProductImage() != null)
-				productDetails.setProductImage(request.getProductImage().getName());
+				productDetails.setProductImage(urlImage.getUrl());
 			productDetails.setSellerId(request.getUserId());
 			productDetails.setCatagoryId(request.getCatagoryId());
 			productDetails.setSubCatagoryId(request.getSubCatagoryId());

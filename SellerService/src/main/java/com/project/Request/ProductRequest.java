@@ -9,6 +9,7 @@ public class ProductRequest extends Request {
 	private Integer catagoryId;
 	private Integer subCatagoryId;
 	private String productName;
+	private String productDescription;
 	private String productPrice;
 	private String productQuantity;
 	private MultipartFile productImage;
@@ -56,6 +57,14 @@ public class ProductRequest extends Request {
 
 	public void setProductName(String productName) {
 		this.productName = productName;
+	}
+
+	public String getProductDescription() {
+		return productDescription;
+	}
+
+	public void setProductDescription(String productDescription) {
+		this.productDescription = productDescription;
 	}
 
 	public String getProductPrice() {

@@ -36,6 +36,9 @@ public class Product implements Serializable {
 	@Column(name = "product_name")
 	private String productName;
 
+	@Column(name = "product_description")
+	private String productDescription;
+
 	@Column(name = "product_price")
 	private String productPrice;
 
@@ -113,6 +116,14 @@ public class Product implements Serializable {
 
 	public void setProductName(String productName) {
 		this.productName = productName;
+	}
+
+	public String getProductDescription() {
+		return productDescription;
+	}
+
+	public void setProductDescription(String productDescription) {
+		this.productDescription = productDescription;
 	}
 
 	public String getProductPrice() {

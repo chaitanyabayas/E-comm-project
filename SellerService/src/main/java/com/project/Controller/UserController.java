@@ -39,6 +39,13 @@ public class UserController {
 		return response;
 	}
 
+	@RequestMapping(value = "userEdit", method = RequestMethod.POST, produces = "application/json")
+	public Response userEdit(@RequestBody UserRequest request) throws SellerServiceExpection {
+
+		Response response = userService.userRegister(request);
+		return response;
+	}
+
 	@RequestMapping(value = "userLogin", method = RequestMethod.POST, produces = "application/json")
 	public LoginResponse userLogin(@RequestBody LoginRequest request) throws SellerServiceExpection {
 
