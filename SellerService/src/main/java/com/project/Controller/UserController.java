@@ -1,7 +1,12 @@
 package com.project.Controller;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,7 +25,7 @@ import com.project.Service.UserService;
 
 @RestController
 @RequestMapping("/seller/")
-//@CrossOrigin(origins = "http://localhost:8762")
+@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
 	@Autowired
@@ -46,10 +51,29 @@ public class UserController {
 		return response;
 	}
 
-	@RequestMapping(value = "userLogin", method = RequestMethod.POST, produces = "application/json")
-	public LoginResponse userLogin(@RequestBody LoginRequest request) throws SellerServiceExpection {
+//	@RequestMapping(value = "userLogin", method = RequestMethod.POST, produces = "application/json")
+//	public LoginResponse userLogin(@RequestBody LoginRequest request) throws SellerServiceExpection {
+//
+//		LoginResponse response = userService.userLogin(request);
+//		return response;
+//	}
+
+	@RequestMapping(value = "userLogin", method = RequestMethod.GET, produces = "application/json")
+	public LoginResponse doLogin(@RequestHeader(name = "X-AUTH") String authorization,
+			@RequestHeader(name = "X-Real-IP") String ipAddress) throws SellerServiceExpection {
+
+		String base64Credentials = authorization.substring("Basic".length()).trim();
+		byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);
+		String credentials = new String(credDecoded, StandardCharsets.UTF_8);
+		// credentials = username:password
+		final String[] values = credentials.split(":", 2);
+
+		LoginRequest request = new LoginRequest();
+		request.setUsername(values[0]);
+		request.setPassword(values[1]);
 
 		LoginResponse response = userService.userLogin(request);
+
 		return response;
 	}
 

@@ -31,25 +31,25 @@ public class ProductController {
 		return response;
 	}
 
-	@RequestMapping(value = "getProductsBySellerId", method = RequestMethod.POST, produces = "application/json")
-	public ProductResponse getProductsBySellerId(@RequestParam(value = "userId") Integer userId) {
+	@RequestMapping(value = "getProductsBySellerId", method = RequestMethod.GET)
+	public ProductResponse getProductsBySellerId(@RequestParam(value = "userid") Integer userId) {
 
 		ProductResponse response = productService.getProductsBySellerId(userId);
 		return response;
 	}
 
-	@RequestMapping(value = "addProduct", method = RequestMethod.POST)
+	@RequestMapping(value = "addProduct", method = RequestMethod.POST, produces = "application/json")
 	public Response addProduct(@RequestBody @ModelAttribute ProductRequest request,
-			@RequestHeader(value = "userId") Integer userId) throws SellerServiceExpection {
+			@RequestHeader(value = "userid") Integer userId) throws SellerServiceExpection {
 		request.setUserId(userId);
 
 		Response response = productService.addProduct(request);
 		return response;
 	}
 
-	@RequestMapping(value = "editProduct", method = RequestMethod.POST)
+	@RequestMapping(value = "editProduct", method = RequestMethod.POST, produces = "application/json")
 	public Response editProduct(@RequestBody @ModelAttribute ProductRequest request,
-			@RequestHeader(value = "userId") Integer userId) throws SellerServiceExpection {
+			@RequestHeader(value = "userid") Integer userId) throws SellerServiceExpection {
 		request.setUserId(userId);
 
 		Response response = productService.addProduct(request);
